@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body {
+    @apply tw-h-full tw-w-full;
+  }
+
+  body {
+    background-color: rgb(252, 245, 229);
+    @apply tw-h-full tw-w-full tw-text-gray-800 tw-font-sans;
+  }
+
+  h1 {
+    @apply tw-text-5xl;
+  }
+
+  h2 {
+    @apply tw-text-xl;
+  }
+
+  h3 {
+    @apply tw-text-lg tw-font-bold tw-mb-4;
+  }
+
+  input,
+  select {
+    border-style: inset;
+    background-color: rgba(255, 255, 255, 0.65);
+
+    @apply tw-border-2 tw-border-gray-200 tw-rounded-md tw-px-1;
+  }
+
+  input[type='number'] {
+    width: 4.5rem;
+    @apply tw-pr-0;
+  }
+
+  select:hover {
+    @apply tw-cursor-pointer;
+  }
+
+  select:disabled {
+    @apply tw-opacity-70;
+  }
+
+  button {
+    box-shadow: inset 0 2px 8px 0 rgb(0 0 0 / 0.2);
+
+    @apply tw-border tw-border-solid tw-border-gray-800 tw-p-1;
+  }
+
+  button:hover {
+    box-shadow: inset 0 2px 12px 0 rgb(0 0 0 / 0.3);
+  }
+
+  button:active,
+  button:disabled {
+    box-shadow: inset 0 2px 14px 0 rgb(0 0 0 / 0.4);
+  }
+
+  button:disabled,
+  select:disabled {
+    @apply tw-cursor-not-allowed;
+  }
+
+  button:disabled {
+    background-color: rgba(0, 0, 0, 0.15);
+  }
+
+  .box {
+    @apply tw-flex tw-flex-col tw-mb-2 tw-p-3 tw-border tw-border-solid tw-border-gray-800;
+  }
+
+  .container {
+    @apply tw-w-full
+    sm:tw-w-4/5;
+  }
+
+  @media (min-width: 1024px) {
+    .container {
+      max-width: 975px;
+    }
+  }
+}

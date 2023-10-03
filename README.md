@@ -1,0 +1,1 @@
+A vue based application replicating the functionality of an Adventure sheet from the popular series of Fighting Fantasy novels

@@ -1,0 +1,148 @@
+<template>
+  <div class="dice">
+    <div v-if="!one && !two" class="dot-tl" />
+    <div v-if="six" class="dot-ml" />
+    <div v-if="!one && !three" class="dot-bl" />
+    <div v-if="!two && !four && !six" class="dot-m" />
+    <div v-if="!one && !three" class="dot-tr" />
+    <div v-if="six" class="dot-mr" />
+    <div v-if="!one && !two" class="dot-br" />
+  </div>
+</template>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+  props: {
+    number: {
+      type: Number,
+      default: 1,
+    },
+    rollDice: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  data() {
+    return {
+      rolledNumber: this.number,
+    };
+  },
+  watch: {
+    rollDice(): void {
+      this.roll();
+    },
+  },
+  computed: {
+    one(): boolean {
+      return this.rolledNumber === 1;
+    },
+    two(): boolean {
+      return this.rolledNumber === 2;
+    },
+    three(): boolean {
+      return this.rolledNumber === 3;
+    },
+    four(): boolean {
+      return this.rolledNumber === 4;
+    },
+    five(): boolean {
+      return this.rolledNumber === 5;
+    },
+    six(): boolean {
+      return this.rolledNumber === 6;
+    },
+  },
+  mounted(): void {
+    // this.roll();
+    this.rolledNumber = Math.floor(Math.random() * 6) + 1;
+  },
+  methods: {
+    async roll(): Promise<void> {
+      const wait = (): Promise<void> =>
+        new Promise((resolve) => setTimeout(resolve, 150));
+
+      for (let i = 1; i <= 6; i++) {
+        this.rolledNumber = Math.floor(Math.random() * 6) + 1;
+        await wait();
+      }
+
+      this.$emit('roll', this.rolledNumber);
+    },
+  },
+});
+</script>
+
+<style>
+.dice {
+  box-shadow: inset 0 0 4px 0 rgb(0 0 0 / 0.4);
+
+  @apply tw-h-16
+  tw-w-16
+  tw-m-1
+  tw-relative
+  tw-rounded-lg
+  tw-border-2
+  tw-border-solid
+  tw-border-gray-800
+  tw-bg-white;
+}
+
+.dot-tl,
+.dot-ml,
+.dot-bl,
+.dot-m,
+.dot-tr,
+.dot-mr,
+.dot-br {
+  @apply tw-h-3
+  tw-w-3
+  tw-absolute
+  tw-top-1/2
+  -tw-translate-y-1/2
+  tw-left-0
+  tw-right-0
+  tw-mx-auto
+  tw-bg-gray-800
+  tw-rounded-full;
+}
+
+.dot-tl,
+.dot-ml,
+.dot-bl,
+.dot-tr,
+.dot-mr,
+.dot-br {
+  @apply tw-mx-0;
+}
+
+.dot-tl,
+.dot-tr,
+.dot-bl,
+.dot-br {
+  @apply tw-translate-y-0;
+}
+
+.dot-tl,
+.dot-ml,
+.dot-bl {
+  @apply tw-left-2 tw-right-auto;
+}
+
+.dot-tl,
+.dot-tr {
+  @apply tw-top-2 tw-bottom-auto;
+}
+
+.dot-tr,
+.dot-mr,
+.dot-br {
+  @apply tw-left-auto tw-right-2;
+}
+
+.dot-bl,
+.dot-br {
+  @apply tw-top-auto tw-bottom-2;
+}
+</style>
