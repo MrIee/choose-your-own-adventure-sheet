@@ -26,7 +26,8 @@
   }
 
   input,
-  select {
+  select,
+  textarea {
     border-style: inset;
     background-color: rgba(255, 255, 255, 0.65);
 
@@ -71,7 +72,7 @@
   }
 
   .box {
-    @apply tw-flex tw-flex-col tw-mb-2 tw-p-3 tw-border tw-border-solid tw-border-gray-800;
+    @apply tw-flex tw-flex-col tw-mb-3 tw-p-3 tw-border tw-border-solid tw-border-gray-800;
   }
 
   .container {

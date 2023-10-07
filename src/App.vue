@@ -75,7 +75,7 @@
       <button
         v-if="showCombatLuck"
         class="tw-w-48 tw-mx-auto tw-mb-3"
-        :disabled="isCombatLuckDisabled"
+        :disabled="isCombatLuckDisabled || monsterStamina === 0"
         @click="rollCombatLuckDice"
       >
         Use Luck
@@ -115,7 +115,16 @@
       />
     </div>
     <Divider :img-url="require('@/assets/images/sword.png')" />
-    <InventoryBox :items="formattedSheetData.inventory" />
+    <div class="tw-flex">
+      <div class="tw-w-1/2 tw-mr-1.5">
+        <InventoryBox :items="formattedSheetData.inventory" />
+      </div>
+      <div class="tw-w-1/2 tw-ml-1.5">
+        <QuantityBox label="Gold" v-model="gold" />
+        <QuantityBox label="Provisions" v-model="provisions" />
+      </div>
+    </div>
+    <NotesBox v-model="notes" />
   </div>
 </template>
 
@@ -127,6 +136,8 @@ import Divider from './components/Divider.vue';
 import StatsBox from './components/StatsBox.vue';
 import Monster from './components/MonsterBox.vue';
 import InventoryBox from './components/InventoryBox.vue';
+import QuantityBox from './components/QuantityBox.vue';
+import NotesBox from './components/NotesBox.vue';
 import Dice from './components/Dice.vue';
 import BigButton from './components/inputs/BigButton.vue';
 
@@ -147,6 +158,8 @@ export default defineComponent({
     Divider,
     StatsBox,
     InventoryBox,
+    QuantityBox,
+    NotesBox,
     Monster,
     Dice,
     BigButton,
@@ -202,6 +215,9 @@ export default defineComponent({
       monsterName: '',
       monsterSkill: 1,
       monsterStamina: 1,
+      gold: 0,
+      provisions: 0,
+      notes: '',
       sheetData: [
         {
           label: 'stats',

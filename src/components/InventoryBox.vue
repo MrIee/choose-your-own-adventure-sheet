@@ -1,5 +1,5 @@
 <template>
-  <div class="inventory box">
+  <div class="box">
     <h3>{{ label }}</h3>
     <div class="tw-mb-4">
       <span class="tw-mr-2">Add item</span>
@@ -90,10 +90,6 @@ export default defineComponent({
 </script>
 
 <style>
-.inventory {
-  @apply tw-w-full sm:tw-w-1/2;
-}
-
 .inventory__sort-icon {
   @apply tw-inline-block  tw-h-2.5 tw-w-4 tw-mr-2 tw-cursor-n-resize tw-relative;
 }
