@@ -80,9 +80,7 @@
       >
         Use Luck
       </button>
-      <div
-        class="tw-flex tw-flex-col tw-items-center tw-w-full tw-h-20 tw-mx-auto"
-      >
+      <div class="message-box">
         <span class="tw-mx-auto tw-text-center" v-html="fightMessage" />
         <span
           class="tw-mx-auto tw-text-center tw-text-green-600"
@@ -115,11 +113,11 @@
       />
     </div>
     <Divider :img-url="require('@/assets/images/sword.png')" />
-    <div class="tw-flex">
-      <div class="tw-w-1/2 tw-mr-1.5">
+    <div class="tw-flex tw-flex-col md:tw-flex-row">
+      <div class="tw-w-full md:tw-w-1/2 md:tw-mr-1.5">
         <InventoryBox :items="formattedSheetData.inventory" />
       </div>
-      <div class="tw-w-1/2 tw-ml-1.5">
+      <div class="tw-w-full md:tw-w-1/2 md:tw-ml-1.5">
         <QuantityBox label="Gold" v-model="gold" />
         <QuantityBox label="Provisions" v-model="provisions" />
       </div>
@@ -530,5 +528,17 @@ div.sheet {
   tw-mx-auto
   sm:tw-mt-10
   tw-pb-8;
+}
+
+.message-box {
+  background-color: rgba(255, 255, 255, 0.4);
+  border: 4px inset rgba(255, 255, 255, 0.4);
+  @apply tw-w-full tw-flex tw-flex-col tw-items-center tw-h-20 tw-mx-auto;
+}
+
+@media (min-width: 768px) {
+  .message-box {
+    width: 32rem;
+  }
 }
 </style>

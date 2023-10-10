@@ -114,10 +114,6 @@ export default defineComponent({
   @apply tw-w-full tw-px-1 tw-mr-1;
 }
 
-.inventory__item:focus {
-  @apply tw-bg-white;
-}
-
 input[type='number'].inventory__quantity {
   @apply tw-w-12;
 }

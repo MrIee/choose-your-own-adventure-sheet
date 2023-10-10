@@ -31,7 +31,13 @@
     border-style: inset;
     background-color: rgba(255, 255, 255, 0.65);
 
-    @apply tw-border-2 tw-border-gray-200 tw-rounded-md tw-px-1;
+    @apply tw-border-2 tw-border-gray-100 tw-rounded-md tw-px-1;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    background-color: rgba(255, 255, 255, 0.65);
   }
 
   input[type='number'] {
