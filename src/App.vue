@@ -12,7 +12,10 @@
       <Divider :img-url="require('@/assets/images/sword.png')" />
       <div class="tw-flex tw-justify-center tw-mb-4">
         <div class="tw-flex tw-flex-col">
-          <strong v-if="diceMode === diceModeCombat" class="tw-mx-auto">
+          <strong
+            v-if="diceMode === diceModeCombat || diceModeCombatLuck"
+            class="tw-mx-auto"
+          >
             Player
           </strong>
           <div class="tw-flex">
@@ -25,7 +28,10 @@
           </div>
         </div>
         <div v-if="monsterDice > 0" class="tw-flex tw-flex-col tw-ml-9">
-          <strong v-if="diceMode === diceModeCombat" class="tw-mx-auto">
+          <strong
+            v-if="diceMode === diceModeCombat || diceModeCombatLuck"
+            class="tw-mx-auto"
+          >
             {{ getMonsterName() }}
           </strong>
           <div class="tw-flex">
@@ -120,7 +126,8 @@
         @mouseenter="showStatAnimation = false"
       />
     </div>
-    <div class="tw-flex tw-flex-row-reverse tw-flex-wrap">
+    <!-- Temporarily disable additional encounters -->
+    <!-- <div class="tw-flex tw-flex-row-reverse tw-flex-wrap">
       <div class="tw-w-full tw-flex tw-justify-center tw-mb-3">
         <button class="tw-px-4" @click="onClickAddMonster">
           Add Encounter
@@ -140,7 +147,7 @@
           @click-remove-button="onClickRemoveMonster(index)"
         />
       </div>
-    </div>
+    </div> -->
     <Divider :img-url="require('@/assets/images/sword.png')" />
     <div class="tw-flex tw-flex-col md:tw-flex-row">
       <div class="tw-w-full md:tw-w-1/2 md:tw-mr-1.5">
@@ -177,6 +184,12 @@ interface Stat {
   label: string;
   value: number;
   initialValue: number;
+}
+
+interface Monster {
+  name: string;
+  skill: number;
+  stamina: number;
 }
 
 export default defineComponent({
@@ -226,7 +239,7 @@ export default defineComponent({
       monsterDice: 2,
       monsterRoll: 0,
       monsterTotalRoll: 0,
-      additionalMonsters: new Array<object>(),
+      additionalMonsters: new Array<Monster>(),
       showStatAnimation: false,
       isRollDisabled: false,
       showCombatLuck: false,
@@ -540,6 +553,7 @@ export default defineComponent({
       };
 
       vm.testPlayerRollAgainstLuck(onLucky, onUnlucky);
+      vm.generateCombatVictoryDefeatMessages();
       vm.diceMode = vm.diceModeCombat;
     }, 100),
     useCombatLuckAfterAttack: debounce((vm): void => {
@@ -555,6 +569,7 @@ export default defineComponent({
       };
 
       vm.testPlayerRollAgainstLuck(onLucky, onUnlucky);
+      vm.generateCombatVictoryDefeatMessages();
       vm.diceMode = vm.diceModeCombat;
     }, 100),
     onClickAddMonster(): void {
