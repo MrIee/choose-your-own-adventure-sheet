@@ -20,7 +20,7 @@ export default defineComponent({
       default: 'Notes',
     },
     modelValue: {
-      type: Number,
+      type: String,
       default: undefined,
     },
   },

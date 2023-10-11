@@ -1,6 +1,15 @@
 <template>
-  <div class="monster-box box">
-    <h3>Monster Encounter</h3>
+  <div class="tw-w-full md:tw-w-1/2 box">
+    <div class="tw-flex tw-justify-between">
+      <h3>Monster Encounter</h3>
+      <button
+        v-if="isRemoveButtonVisible"
+        class="tw-px-4"
+        @click="onClickRemove"
+      >
+        Remove
+      </button>
+    </div>
     <div class="monster-box__field">
       <span class="monster-box__label">Name:</span>
       <input
@@ -45,6 +54,10 @@ export default defineComponent({
       type: Number,
       default: 1,
     },
+    isRemoveButtonVisible: {
+      type: Boolean,
+      default: undefined,
+    },
     showAnimation: {
       type: Boolean,
       default: undefined,
@@ -78,15 +91,14 @@ export default defineComponent({
     onUpdateStamina(value: number): void {
       this.$emit('update:stamina', value);
     },
+    onClickRemove(): void {
+      this.$emit('click-remove-button');
+    },
   },
 });
 </script>
 
 <style>
-.monster-box {
-  @apply tw-w-full md:tw-w-1/2;
-}
-
 .monster-box__label {
   @apply tw-w-20;
 }

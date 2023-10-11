@@ -112,6 +112,27 @@
         @mouseenter="showStatAnimation = false"
       />
     </div>
+    <div class="tw-flex tw-flex-row-reverse tw-flex-wrap">
+      <div class="tw-w-full tw-flex tw-justify-center tw-mb-3">
+        <button class="tw-px-4" @click="onClickAddMonster">
+          Add Encounter
+        </button>
+      </div>
+      <div
+        v-for="(monster, index) in additionalMonsters"
+        :key="index"
+        class="monster-wrapper"
+      >
+        <Monster
+          class="md:tw-w-full"
+          v-model:name="monster.name"
+          v-model:skill="monster.skill"
+          v-model:stamina="monster.stamina"
+          is-remove-button-visible
+          @click-remove-button="onClickRemoveMonster(index)"
+        />
+      </div>
+    </div>
     <Divider :img-url="require('@/assets/images/sword.png')" />
     <div class="tw-flex tw-flex-col md:tw-flex-row">
       <div class="tw-w-full md:tw-w-1/2 md:tw-mr-1.5">
@@ -197,6 +218,7 @@ export default defineComponent({
       monsterDice: 2,
       monsterRoll: 0,
       monsterTotalRoll: 0,
+      additionalMonsters: new Array<object>(),
       showStatAnimation: false,
       isRollDisabled: false,
       showCombatLuck: false,
@@ -508,6 +530,18 @@ export default defineComponent({
       vm.testPlayerRollAgainstLuck(onLucky, onUnlucky);
       vm.diceMode = vm.diceModeCombat;
     }, 100),
+    onClickAddMonster(): void {
+      const newMonster = {
+        name: '',
+        skill: 5,
+        stamina: 5,
+      };
+
+      this.additionalMonsters.push(newMonster);
+    },
+    onClickRemoveMonster(index: number): void {
+      this.additionalMonsters.splice(index, 1);
+    },
   },
 });
 </script>
@@ -540,5 +574,9 @@ div.sheet {
   .message-box {
     width: 32rem;
   }
+}
+
+.monster-wrapper {
+  @apply tw-w-full md:tw-w-1/2 md:[&:nth-child(even)]:tw-pl-1.5 md:[&:nth-child(odd)]:tw-pr-1.5;
 }
 </style>
