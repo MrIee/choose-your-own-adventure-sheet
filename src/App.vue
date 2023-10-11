@@ -90,6 +90,14 @@
           class="tw-mx-auto tw-text-center tw-text-red-600"
           v-html="failMessage"
         />
+        <span
+          class="tw-mx-auto tw-text-center tw-text-green-600 tw-font-bold"
+          v-html="victoryMessage"
+        />
+        <span
+          class="tw-mx-auto tw-text-center tw-text-red-600 tw-font-bold"
+          v-html="defeatMessage"
+        />
       </div>
     </div>
     <div class="tw-flex tw-flex-col md:tw-flex-row">
@@ -226,6 +234,8 @@ export default defineComponent({
       fightMessage: '',
       successMessage: '',
       failMessage: '',
+      victoryMessage: '',
+      defeatMessage: '',
       skill: 1,
       stamina: 1,
       luck: 1,
@@ -336,9 +346,9 @@ export default defineComponent({
     isCombatDiceDisabled(): boolean {
       return (
         this.isRollDisabled ||
-        this.stamina === 0 ||
-        this.monsterStamina === 0 ||
-        (this.stamina === 0 && this.monsterStamina > 0)
+        this.stamina <= 0 ||
+        this.monsterStamina <= 0 ||
+        (this.stamina <= 0 && this.monsterStamina > 0)
       );
     },
   },
@@ -420,6 +430,8 @@ export default defineComponent({
     clearMessages(): void {
       this.successMessage = '';
       this.failMessage = '';
+      this.victoryMessage = '';
+      this.defeatMessage = '';
     },
     disableRoll() {
       this.isRollDisabled = true;
@@ -471,26 +483,41 @@ export default defineComponent({
 
       vm.testPlayerRollAgainstLuck(onLucky, onUnlucky);
     }, 100),
+    generateCombatStrengthMessages(): void {
+      this.fightMessage = `Player attack strength: <strong>${this.playerTotalRoll}</strong>`;
+      this.fightMessage += ' | ';
+      this.fightMessage += `${this.getMonsterName()} attack strength: `;
+      this.fightMessage += `<strong>${this.monsterTotalRoll}</strong>`;
+    },
+    generateCombatDamageMessages(): void {
+      if (this.playerTotalRoll > this.monsterTotalRoll) {
+        this.monsterStamina -= this.combatDamage;
+        this.successMessage = `You wounded the ${this.getMonsterName()}, `;
+        this.successMessage += `dealing ${this.combatDamage} damage`;
+      } else if (this.playerTotalRoll < this.monsterTotalRoll) {
+        this.stamina -= this.combatDamage;
+        this.failMessage = `The ${this.getMonsterName()} has hit you, `;
+        this.failMessage += `dealing ${this.combatDamage} damage`;
+      }
+    },
+    generateCombatVictoryDefeatMessages(): void {
+      if (this.monsterStamina <= 0) {
+        this.victoryMessage = `You have slain the ${this.monsterName}`;
+      }
+
+      if (this.stamina <= 0) {
+        this.defeatMessage = `Your story ends here, you have been slain by the ${this.monsterName}`;
+      }
+    },
     fight: debounce((vm): void => {
       vm.playerTotalRoll = vm.skill + vm.playerRoll;
       vm.monsterTotalRoll = vm.monsterSkill + vm.monsterRoll;
-
       vm.isRollDisabled = false;
       vm.isCombatLuckDisabled = false;
-      vm.fightMessage = `Player attack strength: <strong>${vm.playerTotalRoll}</strong>`;
-      vm.fightMessage += ' | ';
-      vm.fightMessage += `${vm.getMonsterName()} attack strength: `;
-      vm.fightMessage += `<strong>${vm.monsterTotalRoll}</strong>`;
 
-      if (vm.playerTotalRoll > vm.monsterTotalRoll) {
-        vm.monsterStamina -= vm.combatDamage;
-        vm.successMessage = `You wounded the ${vm.getMonsterName()}, `;
-        vm.successMessage += `dealing ${vm.combatDamage} damage`;
-      } else if (vm.playerTotalRoll < vm.monsterTotalRoll) {
-        vm.stamina -= vm.combatDamage;
-        vm.failMessage = `The ${vm.getMonsterName()} has hit you, `;
-        vm.failMessage += `dealing ${vm.combatDamage} damage`;
-      }
+      vm.generateCombatStrengthMessages();
+      vm.generateCombatDamageMessages();
+      vm.generateCombatVictoryDefeatMessages();
     }, 100),
     rollCombatLuckDice(): void {
       this.diceMode = this.diceModeCombatLuck;
