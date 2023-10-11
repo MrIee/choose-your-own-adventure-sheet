@@ -83,7 +83,7 @@ export default defineComponent({
       }
 
       this.itemsList.push({ name: newItemName, quantity: 1 });
-      inventory.$el.lastChild.scrollIntoView();
+      inventory.$el.scrollTop = inventory.$el.scrollHeight;
     },
   },
 });
