@@ -22,12 +22,11 @@
             <Dice
               v-for="(dice, index) in playerDice"
               :key="index"
-              :roll-dice="rollForPlayer"
-              @roll="getPlayerRoll"
+              :number="dice"
             />
           </div>
         </div>
-        <div v-if="monsterDice > 0" class="tw-flex tw-flex-col tw-ml-9">
+        <div v-if="monsterDice.length > 0" class="tw-flex tw-flex-col tw-ml-9">
           <strong
             v-if="diceMode === diceModeCombat || diceModeCombatLuck"
             class="tw-mx-auto"
@@ -38,8 +37,7 @@
             <Dice
               v-for="(dice, index) in monsterDice"
               :key="index"
-              :roll-dice="rollForMonster"
-              @roll="getMonsterRoll"
+              :number="dice"
             />
           </div>
         </div>
@@ -164,7 +162,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { debounce } from 'lodash';
 import TopBar from './components/Topbar.vue';
 import Divider from './components/Divider.vue';
 import StatsBox from './components/StatsBox.vue';
@@ -207,8 +204,6 @@ export default defineComponent({
   data() {
     return {
       combatDamage: 2,
-      rollForPlayer: false,
-      rollForMonster: false,
       defaultDiceOption: 2,
       diceOptions: {
         oneDice: {
@@ -233,11 +228,9 @@ export default defineComponent({
       diceModeTestLuck: 'testLuck',
       diceModeCombat: 'combat',
       diceModeCombatLuck: 'combatLuck',
-      playerDice: 2,
-      playerRoll: 0,
+      playerDice: [0, 0],
       playerTotalRoll: 0,
-      monsterDice: 2,
-      monsterRoll: 0,
+      monsterDice: [0, 0],
       monsterTotalRoll: 0,
       additionalMonsters: new Array<Monster>(),
       showStatAnimation: false,
@@ -304,32 +297,6 @@ export default defineComponent({
     };
   },
   watch: {
-    playerRoll(): void {
-      if (this.playerRoll > 0) {
-        switch (this.diceMode) {
-          case this.diceModeTestLuck:
-            this.testLuck(this);
-            this.isRollDisabled = false;
-            break;
-          case this.diceModeRegular:
-            this.isRollDisabled = false;
-            break;
-          case this.diceModeCombatLuck:
-            if (this.playerTotalRoll < this.monsterTotalRoll) {
-              this.useCombatLuckAfterDamage(this);
-            }
-            if (this.playerTotalRoll > this.monsterTotalRoll) {
-              this.useCombatLuckAfterAttack(this);
-            }
-            break;
-        }
-      }
-    },
-    monsterRoll(): void {
-      if (this.playerRoll > 0) {
-        this.fight(this);
-      }
-    },
     monsterStamina(value: number): void {
       if (value <= 0) {
         this.monsterStamina = 0;
@@ -364,6 +331,18 @@ export default defineComponent({
         (this.stamina <= 0 && this.monsterStamina > 0)
       );
     },
+    playerRoll(): number {
+      return this.playerDice.reduce(
+        (sum: number, current: number) => sum + current,
+        0
+      );
+    },
+    monsterRoll(): number {
+      return this.monsterDice.reduce(
+        (sum: number, current: number) => sum + current,
+        0
+      );
+    },
   },
   mounted(): void {
     this.initialiseStats();
@@ -371,6 +350,23 @@ export default defineComponent({
     this.monsterName = this.getMonsterName();
   },
   methods: {
+    async makeDiceRoll(
+      callback: (number: number) => void,
+      delay = 150
+    ): Promise<void> {
+      let rolledNumber = 0;
+      const numberOfSideOnDie = 6;
+      const wait = (): Promise<void> =>
+        new Promise((resolve) => setTimeout(resolve, delay));
+
+      for (let i = 1; i <= numberOfSideOnDie; i++) {
+        rolledNumber = Math.floor(Math.random() * numberOfSideOnDie) + 1;
+        callback && callback(rolledNumber);
+        await wait();
+      }
+
+      return Promise.resolve();
+    },
     initialiseStats(): void {
       const stats = this.formattedSheetData.stats;
 
@@ -407,38 +403,35 @@ export default defineComponent({
 
       switch (option) {
         case this.diceOptions.oneDice.value:
-          this.playerDice = 1;
-          this.monsterDice = 0;
+          this.playerDice = [0];
+          this.monsterDice = [];
           this.diceMode = this.diceModeRegular;
           break;
         case this.diceOptions.fight.value:
           this.showCombatLuck = true;
-          this.playerDice = 2;
-          this.monsterDice = 2;
+          this.playerDice = [0, 0];
+          this.monsterDice = [0, 0];
           this.diceMode = this.diceModeCombat;
           break;
         case this.diceOptions.testYourLuck.value:
-          this.playerDice = 2;
-          this.monsterDice = 0;
+          this.playerDice = [0, 0];
+          this.monsterDice = [];
           this.diceMode = this.diceModeTestLuck;
           break;
         case this.diceOptions.twoDice.value:
         default:
-          this.playerDice = 2;
-          this.monsterDice = 0;
+          this.playerDice = [0, 0];
+          this.monsterDice = [];
           this.diceMode = this.diceModeRegular;
           break;
       }
+
+      this.rollPlayerDice(false);
+      this.rollMonsterDice(false);
     },
     onChangeDice(event: InputEvent) {
       const value = (event.target as HTMLInputElement).value;
       this.setDice(parseInt(value, 10));
-    },
-    getPlayerRoll(roll: number): void {
-      this.playerRoll += roll;
-    },
-    getMonsterRoll(roll: number): void {
-      this.monsterRoll += roll;
     },
     clearMessages(): void {
       this.successMessage = '';
@@ -458,23 +451,61 @@ export default defineComponent({
       this.isRollDisabled = true;
       this.isCombatLuckDisabled = true;
       this.showStatAnimation = true;
-      this.playerRoll = 0;
-      this.monsterRoll = 0;
       this.fightMessage = '';
       this.clearMessages();
     },
-    rollCombatDice(): void {
-      this.rollForPlayer = !this.rollForPlayer;
-      this.rollForMonster = !this.rollForMonster;
-    },
-    rollDice(): void {
-      this.preRollConfiguration();
+    async rollPlayerDice(delay = true): Promise<void> {
+      return new Promise((resolve) => {
+        this.playerDice.forEach(async (dice, index) => {
+          const callback = (number: number) => {
+            this.playerDice[index] = number;
+          };
 
-      if (this.diceModeCombat) {
-        this.rollCombatDice();
-      } else {
-        this.rollForPlayer = !this.rollForPlayer;
+          if (delay) {
+            await this.makeDiceRoll(callback);
+          } else {
+            await this.makeDiceRoll(callback, 0);
+          }
+          resolve();
+        });
+      });
+    },
+    async rollMonsterDice(delay = true): Promise<void> {
+      return new Promise((resolve) => {
+        this.monsterDice.forEach(async (dice, index) => {
+          const callback = (number: number) => {
+            this.monsterDice[index] = number;
+          };
+
+          if (delay) {
+            await this.makeDiceRoll(callback);
+          } else {
+            await this.makeDiceRoll(callback, 0);
+          }
+          resolve();
+        });
+      });
+    },
+    async rollDiceForMode(): Promise<void> {
+      switch (this.diceMode) {
+        case this.diceModeTestLuck:
+          await this.rollPlayerDice();
+          this.testLuck();
+          break;
+        case this.diceModeRegular:
+          await this.rollPlayerDice();
+          break;
+        case this.diceModeCombat:
+          this.rollPlayerDice();
+          await this.rollMonsterDice();
+          this.doCombat();
+          break;
       }
+      this.isRollDisabled = false;
+    },
+    async rollDice(): Promise<void> {
+      this.preRollConfiguration();
+      await this.rollDiceForMode();
     },
     testPlayerRollAgainstLuck(onLucky: () => void, onUnlucky: () => void) {
       if (this.playerRoll <= this.luck) {
@@ -485,17 +516,17 @@ export default defineComponent({
 
       this.luck -= 1;
     },
-    testLuck: debounce((vm): void => {
+    testLuck(): void {
       const onLucky = () => {
-        vm.successMessage = 'You are lucky';
+        this.successMessage = 'You are lucky';
       };
 
       const onUnlucky = () => {
-        vm.failMessage = 'You are unlucky';
+        this.failMessage = 'You are unlucky';
       };
 
-      vm.testPlayerRollAgainstLuck(onLucky, onUnlucky);
-    }, 100),
+      this.testPlayerRollAgainstLuck(onLucky, onUnlucky);
+    },
     generateCombatStrengthMessages(): void {
       this.fightMessage = `Player attack strength: <strong>${this.playerTotalRoll}</strong>`;
       this.fightMessage += ' | ';
@@ -522,56 +553,62 @@ export default defineComponent({
         this.defeatMessage = `Your story ends here, you have been slain by the ${this.monsterName}`;
       }
     },
-    fight: debounce((vm): void => {
-      vm.playerTotalRoll = vm.skill + vm.playerRoll;
-      vm.monsterTotalRoll = vm.monsterSkill + vm.monsterRoll;
-      vm.isRollDisabled = false;
-      vm.isCombatLuckDisabled = false;
+    doCombat(): void {
+      this.playerTotalRoll = this.skill + this.playerRoll;
+      this.monsterTotalRoll = this.monsterSkill + this.monsterRoll;
+      this.isCombatLuckDisabled = false;
 
-      vm.generateCombatStrengthMessages();
-      vm.generateCombatDamageMessages();
-      vm.generateCombatVictoryDefeatMessages();
-    }, 100),
-    rollCombatLuckDice(): void {
-      this.diceMode = this.diceModeCombatLuck;
-      this.playerRoll = 0;
-      this.isCombatLuckDisabled = true;
-      this.rollForPlayer = !this.rollForPlayer;
-      this.clearMessages();
+      this.generateCombatStrengthMessages();
+      this.generateCombatDamageMessages();
+      this.generateCombatVictoryDefeatMessages();
     },
-    useCombatLuckAfterDamage: debounce((vm): void => {
+    async rollCombatLuckDice(): Promise<void> {
+      this.diceMode = this.diceModeCombatLuck;
+      this.isCombatLuckDisabled = true;
+      this.clearMessages();
+
+      await this.rollPlayerDice();
+
+      if (this.playerTotalRoll < this.monsterTotalRoll) {
+        this.useCombatLuckAfterDamage();
+      }
+      if (this.playerTotalRoll > this.monsterTotalRoll) {
+        this.useCombatLuckAfterAttack();
+      }
+    },
+    useCombatLuckAfterDamage(): void {
       const onLucky = () => {
-        vm.successMessage =
+        this.successMessage =
           'You have managed to avoid the full damage of the blow have only been dealt 1 damage';
-        vm.stamina += 1;
+        this.stamina += 1;
       };
 
       const onUnlucky = () => {
-        vm.failMessage =
+        this.failMessage =
           'You have taken a more serious blow and are dealt 1 extra damage';
-        vm.stamina -= 1;
+        this.stamina -= 1;
       };
 
-      vm.testPlayerRollAgainstLuck(onLucky, onUnlucky);
-      vm.generateCombatVictoryDefeatMessages();
-      vm.diceMode = vm.diceModeCombat;
-    }, 100),
-    useCombatLuckAfterAttack: debounce((vm): void => {
+      this.testPlayerRollAgainstLuck(onLucky, onUnlucky);
+      this.generateCombatVictoryDefeatMessages();
+      this.diceMode = this.diceModeCombat;
+    },
+    useCombatLuckAfterAttack(): void {
       const onLucky = () => {
-        vm.successMessage = `You have inflicted a severe wound and dealt an extra `;
-        vm.successMessage += `${vm.combatDamage} damage`;
-        vm.monsterStamina -= vm.combatDamage;
+        this.successMessage = `You have inflicted a severe wound and dealt an extra `;
+        this.successMessage += `${this.combatDamage} damage`;
+        this.monsterStamina -= this.combatDamage;
       };
 
       const onUnlucky = () => {
-        vm.failMessage = 'The wound was a mere graze and only dealt 1 damage';
-        vm.monsterStamina += 1;
+        this.failMessage = 'The wound was a mere graze and only dealt 1 damage';
+        this.monsterStamina += 1;
       };
 
-      vm.testPlayerRollAgainstLuck(onLucky, onUnlucky);
-      vm.generateCombatVictoryDefeatMessages();
-      vm.diceMode = vm.diceModeCombat;
-    }, 100),
+      this.testPlayerRollAgainstLuck(onLucky, onUnlucky);
+      this.generateCombatVictoryDefeatMessages();
+      this.diceMode = this.diceModeCombat;
+    },
     onClickAddMonster(): void {
       const newMonster = {
         name: '',

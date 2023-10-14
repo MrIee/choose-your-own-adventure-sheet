@@ -36,22 +36,22 @@ export default defineComponent({
   },
   computed: {
     one(): boolean {
-      return this.rolledNumber === 1;
+      return this.number === 1;
     },
     two(): boolean {
-      return this.rolledNumber === 2;
+      return this.number === 2;
     },
     three(): boolean {
-      return this.rolledNumber === 3;
+      return this.number === 3;
     },
     four(): boolean {
-      return this.rolledNumber === 4;
+      return this.number === 4;
     },
     five(): boolean {
-      return this.rolledNumber === 5;
+      return this.number === 5;
     },
     six(): boolean {
-      return this.rolledNumber === 6;
+      return this.number === 6;
     },
   },
   mounted(): void {
