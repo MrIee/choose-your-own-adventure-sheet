@@ -25,9 +25,6 @@
           <span class="inventory__remove-icon" @click="removeItem(index)" />
         </div>
       </template>
-      <template #footer>
-        <div class="tw-pb-8" />
-      </template>
     </Draggable>
   </div>
 </template>
@@ -83,7 +80,9 @@ export default defineComponent({
       }
 
       this.itemsList.push({ name: newItemName, quantity: 1 });
-      inventory.$el.scrollTop = inventory.$el.scrollHeight;
+      this.$nextTick(() => {
+        inventory.$el.scrollTop = inventory.$el.scrollHeight;
+      });
     },
   },
 });
