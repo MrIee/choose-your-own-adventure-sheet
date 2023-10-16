@@ -14,7 +14,7 @@
         <div class="tw-flex tw-flex-col">
           <strong
             v-if="diceMode === diceModeCombat || diceModeCombatLuck"
-            class="tw-mx-auto"
+            class="tw-w-32 tw-mx-auto tw-text-center"
           >
             {{ playerName }}
           </strong>
@@ -29,7 +29,7 @@
         <div v-if="monsterDice.length > 0" class="tw-flex tw-flex-col tw-ml-9">
           <strong
             v-if="diceMode === diceModeCombat || diceModeCombatLuck"
-            class="tw-mx-auto"
+            class="tw-w-32 tw-mx-auto tw-text-center"
           >
             {{ encounterName || getMonsterName() }}
           </strong>
