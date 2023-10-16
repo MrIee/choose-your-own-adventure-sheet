@@ -24,16 +24,6 @@ export default defineComponent({
       default: false,
     },
   },
-  data() {
-    return {
-      rolledNumber: this.number,
-    };
-  },
-  watch: {
-    rollDice(): void {
-      this.roll();
-    },
-  },
   computed: {
     one(): boolean {
       return this.number === 1;
@@ -52,23 +42,6 @@ export default defineComponent({
     },
     six(): boolean {
       return this.number === 6;
-    },
-  },
-  mounted(): void {
-    // this.roll();
-    this.rolledNumber = Math.floor(Math.random() * 6) + 1;
-  },
-  methods: {
-    async roll(): Promise<void> {
-      const wait = (): Promise<void> =>
-        new Promise((resolve) => setTimeout(resolve, 150));
-
-      for (let i = 1; i <= 6; i++) {
-        this.rolledNumber = Math.floor(Math.random() * 6) + 1;
-        await wait();
-      }
-
-      this.$emit('roll', this.rolledNumber);
     },
   },
 });

@@ -1,6 +1,15 @@
 <template>
   <div class="tw-w-full md:tw-w-1/2 box">
-    <h3 class="tw-mb-0">Stats</h3>
+    <h3 class="tw-mb-3">Player</h3>
+    <div class="tw-flex tw-mb-3">
+      <label class="tw-mr-2" for="playerName">Name:</label>
+      <input
+        class="tw-w-full sm:tw-w-auto"
+        type="text"
+        :value="playerName"
+        @input="onUpdatePlayerName"
+      />
+    </div>
     <div class="tw-flex">
       <div>
         <div class="stats__cell" />
@@ -54,6 +63,15 @@
         </div>
       </div>
     </div>
+    <div>
+      <button
+        class="tw-mt-3"
+        @click="onClickRandomizeStats"
+        :disabled="isRollStatsDisabled"
+      >
+        Roll Stats
+      </button>
+    </div>
   </div>
 </template>
 
@@ -68,6 +86,10 @@ export default defineComponent({
     StatAnimation,
   },
   props: {
+    playerName: {
+      type: String,
+      default: 'Player',
+    },
     initialSkill: {
       type: Number,
       default: 1,
@@ -91,6 +113,10 @@ export default defineComponent({
     currentLuck: {
       type: Number,
       default: 1,
+    },
+    isRollStatsDisabled: {
+      type: Boolean,
+      default: false,
     },
     showAnimation: {
       type: Boolean,
@@ -129,6 +155,12 @@ export default defineComponent({
     },
   },
   methods: {
+    onUpdatePlayerName(event: Event): void {
+      this.$emit(
+        'update:player-name',
+        (event.target as HTMLInputElement).value
+      );
+    },
     onUpdateInitialSkill(value: number): void {
       this.$emit('update:initialSkill', value);
     },
@@ -146,6 +178,9 @@ export default defineComponent({
     },
     onUpdateLuck(value: number): void {
       this.$emit('update:current-luck', value);
+    },
+    onClickRandomizeStats() {
+      this.$emit('randomize-stats');
     },
   },
 });
