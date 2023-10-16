@@ -329,15 +329,12 @@ export default defineComponent({
         0
       );
     },
-    validMonsterName(): string {
-      return this.monsterName ? this.monsterName : 'Monster';
-    },
   },
   mounted(): void {
     // Temporarily disable initialise stats until save/load is properly implemented
     // this.initialiseStats();
     this.setDice(this.defaultDiceOption);
-    this.monsterName = this.getMonsterName();
+    this.encounterName = this.getMonsterName();
   },
   methods: {
     initialiseStats(): void {
