@@ -81,13 +81,20 @@
     @apply tw-flex tw-flex-col tw-mb-3 tw-p-3 tw-border tw-border-solid tw-border-gray-800;
   }
 
+  .box.container {
+    @apply tw-p-0 tw-border-none;
+  }
+
   .container {
-    @apply tw-w-full
-    sm:tw-w-4/5;
+    @apply tw-flex tw-flex-col tw-mx-auto sm:tw-mt-10 tw-pb-8;
+  }
+
+  .wrapper {
+    @apply tw-w-full sm:tw-w-4/5;
   }
 
   @media (min-width: 1024px) {
-    .container {
+    .wrapper {
       max-width: 975px;
     }
   }

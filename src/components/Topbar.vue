@@ -1,10 +1,12 @@
 <template>
   <div class="topbar">
-    <div class="container tw-flex tw-items-center tw-text-white">
-      <h2 class="tw-text-base sm:tw-text-xl">{{ title }}</h2>
+    <div class="wrapper tw-flex tw-items-center tw-text-white">
+      <h2 class="tw-text-base sm:tw-text-xl tw-mr-6">{{ title }}</h2>
+      <ul class="topbar__nav">
+        <li><router-link to="/">Home</router-link></li>
+      </ul>
     </div>
   </div>
-  <div class="tw-mb-14"></div>
 </template>
 
 <script lang="ts">
@@ -33,5 +35,13 @@ export default defineComponent({
   sm:tw-px-0
   tw-py-3
   tw-bg-gray-800;
+}
+
+.topbar__nav li {
+  @apply tw-inline-block;
+}
+
+.topbar__nav li {
+  @apply tw-mr-3 last:tw-mr-0;
 }
 </style>
