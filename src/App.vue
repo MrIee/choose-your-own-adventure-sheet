@@ -31,7 +31,7 @@
             v-if="diceMode === diceModeCombat || diceModeCombatLuck"
             class="tw-mx-auto"
           >
-            {{ encounterName || validMonsterName }}
+            {{ encounterName || getMonsterName() }}
           </strong>
           <div class="tw-flex">
             <Dice
@@ -337,7 +337,7 @@ export default defineComponent({
     // Temporarily disable initialise stats until save/load is properly implemented
     // this.initialiseStats();
     this.setDice(this.defaultDiceOption);
-    this.monsterName = this.validMonsterName;
+    this.monsterName = this.getMonsterName();
   },
   methods: {
     initialiseStats(): void {
@@ -367,6 +367,10 @@ export default defineComponent({
           }
         });
       }
+    },
+    getMonsterName(name?: string): string {
+      const monsterName = name || this.monsterName;
+      return monsterName ? monsterName : 'Monster';
     },
     getRandomDiceNumber(sides = 6) {
       return Math.ceil(Math.random() * sides);
@@ -504,9 +508,11 @@ export default defineComponent({
         this.messageBoxRef
       ] as typeof this;
 
-      (messageBox as unknown as HTMLElement).scrollTop = (
-        messageBox as unknown as HTMLElement
-      ).scrollHeight;
+      this.$nextTick(() => {
+        (messageBox as unknown as HTMLElement).scrollTop = (
+          messageBox as unknown as HTMLElement
+        ).scrollHeight;
+      });
     },
     createMessageBoxSuccessText(text: string) {
       return `<span class="tw-text-green-600">${text}</span>`;
@@ -545,47 +551,47 @@ export default defineComponent({
       this.messageBoxText = `${this.playerName} attack strength: `;
       this.messageBoxText += `<strong>${this.playerTotalRoll}</strong>`;
       this.messageBoxText += ' | ';
-      this.messageBoxText += `${this.validMonsterName} attack strength: `;
+      this.messageBoxText += `${this.getMonsterName()} attack strength: `;
       this.messageBoxText += `<strong>${this.monsterTotalRoll}</strong>`;
+      this.scrollToBottomOfMessageBox();
     },
     generateCombatDamageMessages(): void {
       if (this.playerTotalRoll > this.monsterTotalRoll) {
         this.monsterStamina -= this.combatDamage;
         this.messageBoxText += this.createMessageBoxSuccessText(
-          `<br />You wounded the ${this.validMonsterName}, dealing ${this.combatDamage} damage`
+          `<br />You wounded the ${this.getMonsterName()}, dealing ${
+            this.combatDamage
+          } damage`
         );
       } else if (this.playerTotalRoll < this.monsterTotalRoll) {
         this.stamina -= this.combatDamage;
         this.messageBoxText += this.createMessageBoxFailureText(
-          `<br />The ${this.validMonsterName} has hit you, dealing ${this.combatDamage} damage`
+          `<br />The ${this.getMonsterName()} has hit you, dealing ${
+            this.combatDamage
+          } damage`
         );
       } else {
         this.isCombatLuckDisabled = true;
-        this.messageBoxText += `<br />You and the ${this.validMonsterName} have parried `;
+        this.messageBoxText += `<br />You and the ${this.getMonsterName()} have parried `;
         this.messageBoxText += 'each others blows';
       }
+      this.scrollToBottomOfMessageBox();
     },
     generateCombatVictoryDefeatMessages(): void {
       if (this.monsterStamina <= 0) {
         this.messageBoxText += this.createMessageBoxVictoryText(
-          `<br />You have slain the ${this.validMonsterName}`
+          `<br />You have slain the ${this.getMonsterName()}`
         );
       }
 
       if (this.stamina <= 0) {
         this.messageBoxText += this.createMessageBoxDefeatText(
-          `<br />Your story ends here, you have been slain by the ${this.validMonsterName}`
+          `<br />Your story ends here, you have been slain by the ${this.getMonsterName()}`
         );
       }
+      this.scrollToBottomOfMessageBox();
     },
-    async doCombat(): Promise<void> {
-      this.playerTotalRoll = this.skill + this.playerRoll;
-      this.monsterTotalRoll = this.monsterSkill + this.monsterRoll;
-      this.isCombatLuckDisabled = false;
-
-      this.generateCombatStrengthMessages();
-      this.generateCombatDamageMessages();
-
+    async generateAdditionalEncounters(): Promise<void> {
       if (this.additionalEncounters.length > 0) {
         if (this.encounterName === '') {
           this.encounterName = this.monsterName;
@@ -602,22 +608,32 @@ export default defineComponent({
           this.messageBoxText += '<br />';
 
           if (playerTotalRoll > monsterTotalRoll) {
-            this.messageBoxText += this.createMessageBoxSuccessText(
-              `You have successfully managed to parry an attack from the ${encounter.name}`
-            );
+            let successText =
+              'You have successfully managed to parry an attack from the ';
+            successText += `${this.getMonsterName(encounter.name)}`;
+            this.messageBoxText +=
+              this.createMessageBoxSuccessText(successText);
           } else {
             this.messageBoxText += this.createMessageBoxFailureText(
-              `You have been wounded by the ${encounter.name}`
+              `You have been wounded by the ${this.getMonsterName(
+                encounter.name
+              )}`
             );
             this.stamina -= this.combatDamage;
           }
+          this.scrollToBottomOfMessageBox();
         }
       }
-
+    },
+    async doCombat(): Promise<void> {
+      this.playerTotalRoll = this.skill + this.playerRoll;
+      this.monsterTotalRoll = this.monsterSkill + this.monsterRoll;
+      this.isCombatLuckDisabled = false;
+      this.generateCombatStrengthMessages();
+      this.generateCombatDamageMessages();
+      this.generateAdditionalEncounters();
       this.generateCombatVictoryDefeatMessages();
-      this.$nextTick(() => {
-        this.scrollToBottomOfMessageBox();
-      });
+      this.scrollToBottomOfMessageBox();
     },
     async testCombatLuck(): Promise<void> {
       this.diceMode = this.diceModeCombatLuck;
