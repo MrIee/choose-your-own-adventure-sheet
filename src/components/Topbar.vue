@@ -1,9 +1,13 @@
 <template>
   <div class="topbar">
-    <div class="wrapper tw-flex tw-items-center tw-text-white">
-      <h2 class="tw-text-base sm:tw-text-xl tw-mr-6">{{ title }}</h2>
+    <div class="wrapper tw-flex tw-items-center">
+      <h2 class="tw-text-base sm:tw-text-xl tw-mr-6">
+        <router-link to="/">{{ title }}</router-link>
+      </h2>
       <ul class="topbar__nav">
         <li><router-link to="/">Home</router-link></li>
+        <li><router-link to="/about">About</router-link></li>
+        <li><router-link to="/rules">Rules</router-link></li>
       </ul>
     </div>
   </div>
@@ -24,24 +28,14 @@ export default defineComponent({
 
 <style>
 .topbar {
-  @apply tw-w-full
-  tw-flex
-  tw-justify-center
-  tw-fixed
-  tw-top-0
-  tw-z-10
-  tw-h-14
-  tw-px-4
-  sm:tw-px-0
-  tw-py-3
-  tw-bg-gray-800;
+  @apply tw-h-14 tw-top-0;
 }
 
 .topbar__nav li {
-  @apply tw-inline-block;
+  @apply tw-inline-block tw-mr-3 last:tw-mr-0;
 }
 
-.topbar__nav li {
-  @apply tw-mr-3 last:tw-mr-0;
+.topbar__nav li > a {
+  @apply tw-no-underline;
 }
 </style>

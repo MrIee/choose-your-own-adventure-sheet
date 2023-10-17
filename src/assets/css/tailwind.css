@@ -14,7 +14,7 @@
   }
 
   h1 {
-    @apply tw-text-5xl;
+    @apply tw-text-5xl tw-font-semibold tw-mb-12;
   }
 
   h2 {
@@ -23,6 +23,34 @@
 
   h3 {
     @apply tw-text-lg tw-font-bold tw-mb-4;
+  }
+
+  h4 {
+    @apply tw-font-bold;
+  }
+
+  h1 > a, h2 > a, h3 > a, h4 > a {
+    @apply tw-no-underline;
+  }
+
+  p {
+    @apply tw-mb-3;
+  }
+
+  ul li ul {
+    @apply tw-ml-4;
+  }
+
+  ol {
+    @apply tw-list-decimal tw-list-outside tw-pl-4;
+  }
+
+  ol li {
+    @apply tw-pl-1 tw-mb-3;
+  }
+
+  a {
+    @apply tw-underline;
   }
 
   input,
@@ -82,11 +110,11 @@
   }
 
   .box.container {
-    @apply tw-p-0 tw-border-none;
+    @apply tw-border-none;
   }
 
   .container {
-    @apply tw-flex tw-flex-col tw-mx-auto sm:tw-mt-10 tw-pb-8;
+    @apply tw-flex tw-flex-col tw-mx-auto tw-pt-20 tw-pb-14;
   }
 
   .wrapper {
@@ -97,5 +125,18 @@
     .wrapper {
       max-width: 975px;
     }
+  }
+
+  .topbar,
+  .footer {
+    @apply tw-w-full
+    tw-flex
+    tw-justify-center
+    tw-fixed
+    tw-z-10
+    tw-px-4
+    sm:tw-px-0
+    tw-text-white
+    tw-bg-gray-800;
   }
 }

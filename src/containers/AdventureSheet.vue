@@ -1,9 +1,7 @@
 <template>
   <div class="wrapper container box">
-    <div
-      class="tw-hidden sm:tw-block tw-mt-3 tw-mb-12 tw-text-center tw-font-semibold"
-    >
-      <span class="tw-text-lg tw-opacity-50">
+    <div class="tw-hidden sm:tw-block tw-mb-5 tw-text-center">
+      <span class="tw-text-lg tw-opacity-50 tw-font-semibold">
         Fighting Fantasy - Choose your own Adventure!
       </span>
       <br />
@@ -177,6 +175,7 @@ interface Monster {
 }
 
 export default defineComponent({
+  name: 'AdventureSheet',
   components: {
     Divider,
     PlayerBox,
