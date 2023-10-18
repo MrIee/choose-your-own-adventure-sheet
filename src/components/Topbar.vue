@@ -1,16 +1,32 @@
 <template>
-  <div class="topbar">
-    <div class="wrapper tw-flex tw-items-center">
+  <nav v-click-outside="() => (isExpanded = false)" class="topbar">
+    <div class="wrapper tw-flex tw-items-center tw-flex-wrap">
+      <a
+        for="topbar-menu"
+        class="topbar__nav-icon-wrapper"
+        @click="isExpanded = !isExpanded"
+      >
+        <span class="topbar__nav-icon"></span>
+      </a>
       <h2 class="tw-text-base sm:tw-text-xl tw-mr-6">
-        <router-link to="/">{{ title }}</router-link>
+        <router-link to="/" @click="isExpanded = false">
+          {{ title }}
+        </router-link>
       </h2>
-      <ul class="topbar__nav">
-        <li><router-link to="/">Home</router-link></li>
-        <li><router-link to="/about">About</router-link></li>
-        <li><router-link to="/rules">Rules</router-link></li>
-      </ul>
+      <div
+        :class="{
+          topbar__nav: true,
+          'topbar__nav--expanded': isExpanded,
+        }"
+      >
+        <ul class="topbar__nav-menu" @click="isExpanded = false">
+          <li><router-link to="/">Home</router-link></li>
+          <li><router-link to="/about">About</router-link></li>
+          <li><router-link to="/rules">Rules</router-link></li>
+        </ul>
+      </div>
     </div>
-  </div>
+  </nav>
 </template>
 
 <script lang="ts">
@@ -23,19 +39,82 @@ export default defineComponent({
       required: true,
     },
   },
+  data() {
+    return {
+      isExpanded: false,
+    };
+  },
 });
 </script>
 
 <style>
 .topbar {
-  @apply tw-h-14 tw-top-0;
+  @apply tw-py-3.5 tw-top-0;
 }
 
-.topbar__nav li {
-  @apply tw-inline-block tw-mr-3 last:tw-mr-0;
+.topbar__nav {
+  @apply tw-w-full
+  md:tw-w-auto
+  tw-h-0
+  md:tw-h-auto
+  tw-bg-gray-800
+  tw-top-full
+  md:tw-top-auto
+  tw-left-0
+  md:tw-left-auto
+  tw-overflow-hidden
+  tw-transition-all
+  tw-duration-300;
 }
 
-.topbar__nav li > a {
+@media (max-width: 768px) {
+  .topbar__nav--expanded {
+    display: block;
+    height: 7.5rem;
+  }
+}
+
+.topbar__nav-menu li {
+  @apply tw-block md:tw-inline-block tw-mr-3 last:tw-mr-0 tw-py-2 md:tw-py-0;
+}
+
+.topbar__nav-menu li > a {
   @apply tw-no-underline;
+}
+
+.topbar__nav-icon-wrapper {
+  @apply tw-inline-flex md:tw-hidden tw-h-5 tw-items-center tw-mr-3 tw-cursor-pointer;
+}
+
+.topbar__nav-icon,
+.topbar__nav-icon-wrapper,
+.topbar__nav-icon::before,
+.topbar__nav-icon::after {
+  @apply tw-w-5;
+}
+
+.topbar__nav-icon {
+  @apply tw-relative;
+}
+
+.topbar__nav-icon,
+.topbar__nav-icon::before,
+.topbar__nav-icon::after {
+  @apply tw-h-0.5 tw-bg-white tw-rounded-full;
+}
+
+.topbar__nav-icon::before,
+.topbar__nav-icon::after {
+  content: '';
+
+  @apply tw-absolute;
+}
+
+.topbar__nav-icon::before {
+  @apply tw-bottom-1.5;
+}
+
+.topbar__nav-icon::after {
+  @apply tw-top-1.5;
 }
 </style>

@@ -689,8 +689,9 @@ export default defineComponent({
       this.diceMode = this.diceModeCombat;
     },
     onClickAddMonster(): void {
+      const index = this.additionalEncounters.length + 1;
       const newMonster = {
-        name: '',
+        name: `Monster ${index}`,
         skill: 5,
         stamina: 5,
       };
