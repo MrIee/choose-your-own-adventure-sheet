@@ -1,5 +1,5 @@
 <template>
-  <div class="tw-relative tw-pointer-events-none">
+  <div class="tw:relative tw:h-full tw:pointer-events-none">
     <span
       :class="{
         stats__animated: true,
@@ -46,24 +46,28 @@ export default defineComponent({
 </script>
 
 <style>
+@reference '../assets/css/tailwind.css';
+
 .stats__damage {
-  @apply tw-text-red-500;
+  @apply tw:text-red-500;
 }
 
 .stats__gain {
-  @apply tw-text-green-500;
+  @apply tw:text-green-500;
 }
 
 .stats__animated {
-  @apply tw-font-bold
-  tw-transition-all
-  tw-delay-200
-  tw-duration-1000
-  tw-absolute
-  -tw-right-8;
+  @apply tw:font-bold
+  tw:transition-all
+  tw:delay-200
+  tw:duration-1000
+  tw:absolute
+  tw:top-1/2
+  tw:-translate-y-1/2
+  tw:-right-8;
 }
 
 span.stats__move {
-  @apply tw-right-2 tw-opacity-0;
+  @apply tw:right-2 tw:opacity-0;
 }
 </style>

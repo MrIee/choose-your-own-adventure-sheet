@@ -1,24 +1,31 @@
 <template>
   <div class="wrapper container box">
-    <div class="tw-hidden sm:tw-block tw-mb-5 tw-text-center">
-      <span class="tw-text-lg tw-opacity-50 tw-font-semibold">
+    <Callout
+      v-for="(callout, index) in callouts"
+      :key="index"
+      :label="callout.label"
+      :description="callout.description"
+      @close="removeCallout"
+    />
+    <div class="tw:hidden tw:sm:block tw:mb-5 tw:text-center">
+      <span class="tw:text-lg tw:opacity-50 tw:font-semibold">
         Fighting Fantasy - Choose your own Adventure!
       </span>
       <br />
       <h1>Adventure Sheet</h1>
     </div>
     <div class="sheet">
-      <div class="tw-w-full tw-flex tw-flex-col tw-mb-3">
-        <Divider :img-url="require('@/assets/images/sword.png')" />
-        <div class="tw-flex tw-justify-center tw-mb-4">
-          <div class="tw-flex tw-flex-col">
+      <div class="tw:w-full tw:flex tw:flex-col tw:mb-3">
+        <Divider :img-url="swordImg" />
+        <div class="tw:flex tw:justify-center tw:mb-4">
+          <div class="tw:flex tw:flex-col">
             <strong
               v-if="diceMode === diceModeCombat || diceModeCombatLuck"
-              class="tw-w-32 tw-mx-auto tw-text-center"
+              class="tw:w-32 tw:mx-auto tw:text-center"
             >
               {{ playerName }}
             </strong>
-            <div class="tw-flex">
+            <div class="tw:flex">
               <Dice
                 v-for="(dice, index) in playerDice"
                 :key="index"
@@ -28,15 +35,15 @@
           </div>
           <div
             v-if="monsterDice.length > 0"
-            class="tw-flex tw-flex-col tw-ml-9"
+            class="tw:flex tw:flex-col tw:ml-9"
           >
             <strong
               v-if="diceMode === diceModeCombat || diceModeCombatLuck"
-              class="tw-w-32 tw-mx-auto tw-text-center"
+              class="tw:w-32 tw:mx-auto tw:text-center"
             >
               {{ encounterName || getMonsterName() }}
             </strong>
-            <div class="tw-flex">
+            <div class="tw:flex">
               <Dice
                 v-for="(dice, index) in monsterDice"
                 :key="index"
@@ -45,9 +52,9 @@
             </div>
           </div>
         </div>
-        <div class="tw-flex tw-justify-center tw-mb-3">
+        <div class="tw:flex tw:justify-center tw:mb-3">
           <select
-            class="tw-h-14 tw-mr-3 tw-text-xl tw-px-1"
+            class="tw:h-14 tw:mr-3 tw:text-xl tw:px-1"
             :disabled="isRollDisabled"
             @change="onChangeDice"
           >
@@ -81,7 +88,7 @@
         </div>
         <button
           v-if="showCombatLuck"
-          class="tw-w-48 tw-mx-auto tw-mb-3"
+          class="tw:w-48 tw:mx-auto tw:mb-3"
           :disabled="isCombatLuckDisabled || monsterStamina === 0"
           @click="testCombatLuck"
         >
@@ -89,9 +96,9 @@
         </button>
         <div :ref="messageBoxRef" class="message-box" v-html="messageBoxText" />
       </div>
-      <div class="tw-flex tw-flex-col md:tw-flex-row">
+      <div class="tw:flex tw:flex-col tw:md:flex-row">
         <PlayerBox
-          class="tw-mr-3"
+          class="tw:mr-3"
           v-model:player-name="playerName"
           v-model:initial-skill="initialSkill"
           v-model:current-skill="skill"
@@ -112,33 +119,34 @@
           @mouseenter="showStatAnimation = false"
         />
       </div>
-      <div class="tw-w-full tw-flex tw-justify-center tw-mb-3">
+      <div class="tw:w-full tw:flex tw:justify-center tw:mb-3">
         <button @click="onClickAddMonster">Add Encounter</button>
       </div>
-      <div class="tw-flex tw-flex-row-reverse tw-flex-wrap">
+      <div class="tw:flex tw:flex-row-reverse tw:flex-wrap">
         <div
           v-for="(monster, index) in additionalEncounters"
           :key="index"
           class="monster-wrapper"
         >
           <MonsterBox
-            class="md:tw-w-full"
+            class="tw:md:w-full"
             v-model:name="monster.name"
             v-model:skill="monster.skill"
             v-model:stamina="monster.stamina"
             is-remove-button-visible
-            @click-remove-button="onClickRemoveMonster(index)"
+            @remove-encounter="onClickRemoveMonster(index)"
           />
         </div>
       </div>
-      <Divider :img-url="require('@/assets/images/sword.png')" />
-      <div class="tw-flex tw-flex-col md:tw-flex-row">
-        <div class="tw-w-full md:tw-w-1/2 md:tw-mr-1.5">
+      <Divider :img-url="swordImg" />
+      <div class="tw:flex tw:flex-col tw:md:flex-row">
+        <div class="tw:w-full tw:md:w-1/2 tw:md:mr-1.5">
           <InventoryBox :items="[]" />
         </div>
-        <div class="tw-w-full md:tw-w-1/2 md:tw-ml-1.5">
-          <QuantityBox label="Gold" v-model="gold" />
-          <QuantityBox label="Provisions" v-model="provisions" />
+        <div class="tw:w-full tw:md:w-1/2 tw:md:ml-1.5">
+          <StatBox label="Gold" v-model:current-stat="gold" />
+          <StatBox label="Provisions" v-model:current-stat="provisions" />
+          <CoCSpellBox v-model="magic" @randomize-magic="randomizeMagic" />
         </div>
       </div>
       <NotesBox v-model="notes" />
@@ -148,14 +156,19 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import { mapState, mapActions } from 'pinia';
+import { adventureSheetStore } from '../stores/AdventureSheetStore';
+import swordImg from '../assets/images/sword.png';
 import Divider from '../components/Divider.vue';
+import Callout from '../components/Callout.vue';
 import PlayerBox from '../components/PlayerBox.vue';
 import MonsterBox from '../components/MonsterBox.vue';
 import InventoryBox from '../components/InventoryBox.vue';
-import QuantityBox from '../components/QuantityBox.vue';
 import NotesBox from '../components/NotesBox.vue';
 import Dice from '../components/Dice.vue';
 import BigButton from '../components/inputs/BigButton.vue';
+import StatBox from '../components/StatBox.vue';
+import CoCSpellBox from '../components/CoCSpellBox.vue';
 
 interface SheetData {
   stats?: Array<Stat>;
@@ -178,16 +191,19 @@ export default defineComponent({
   name: 'AdventureSheet',
   components: {
     Divider,
+    Callout,
     PlayerBox,
     InventoryBox,
-    QuantityBox,
     NotesBox,
     MonsterBox,
     Dice,
     BigButton,
+    StatBox,
+    CoCSpellBox,
   },
   data() {
     return {
+      swordImg,
       combatDamage: 2,
       defaultDiceOption: 2,
       diceOptions: {
@@ -236,6 +252,7 @@ export default defineComponent({
       initialSkill: 1,
       initialStamina: 1,
       initialLuck: 1,
+      magic: 1,
       encounterName: '',
       monsterName: '',
       monsterSkill: 1,
@@ -303,6 +320,11 @@ export default defineComponent({
     },
   },
   computed: {
+    ...mapState(adventureSheetStore, [
+      'callouts',
+      'skillBonus',
+      'isBonusesApplied',
+    ]),
     formattedSheetData(): SheetData {
       let formattedSheetData: Record<string, unknown> = {};
 
@@ -340,6 +362,7 @@ export default defineComponent({
     this.encounterName = this.getMonsterName();
   },
   methods: {
+    ...mapActions(adventureSheetStore, ['resetBonuses', 'removeCallout']),
     initialiseStats(): void {
       const stats = this.formattedSheetData.stats;
 
@@ -372,8 +395,8 @@ export default defineComponent({
       const monsterName = name || this.monsterName;
       return monsterName ? monsterName : 'Monster';
     },
-    getRandomDiceNumber(sides = 6) {
-      return Math.ceil(Math.random() * sides);
+    getRandomNumber(max = 6): number {
+      return Math.ceil(Math.random() * max);
     },
     async makeDiceRoll(
       callback: (number: number) => void,
@@ -385,7 +408,7 @@ export default defineComponent({
         new Promise((resolve) => setTimeout(resolve, delay));
 
       for (let i = 1; i <= numberOfSideOnDie; i++) {
-        rolledNumber = this.getRandomDiceNumber();
+        rolledNumber = this.getRandomNumber();
         callback && callback(rolledNumber);
         await wait();
       }
@@ -395,12 +418,10 @@ export default defineComponent({
     randomizeStats(): void {
       const statModifier = 6;
       const staminaStatModifier = 12;
-      const skill = statModifier + this.getRandomDiceNumber();
+      const skill = statModifier + this.getRandomNumber();
       const stamina =
-        staminaStatModifier +
-        this.getRandomDiceNumber() +
-        this.getRandomDiceNumber();
-      const luck = statModifier + this.getRandomDiceNumber();
+        staminaStatModifier + this.getRandomNumber() + this.getRandomNumber();
+      const luck = statModifier + this.getRandomNumber();
 
       this.initialSkill = skill;
       this.skill = skill;
@@ -443,7 +464,7 @@ export default defineComponent({
       this.rollEntityDice(this.playerDice, false);
       this.rollEntityDice(this.monsterDice, false);
     },
-    onChangeDice(event: InputEvent) {
+    onChangeDice(event: Event) {
       const value = (event.target as HTMLInputElement).value;
       this.setDice(parseInt(value, 10));
     },
@@ -494,7 +515,7 @@ export default defineComponent({
 
           this.rollEntityDice(this.playerDice);
           await this.rollEntityDice(this.monsterDice);
-          this.doCombat();
+          this.runCombat();
           break;
       }
       this.isRollDisabled = false;
@@ -515,16 +536,16 @@ export default defineComponent({
       });
     },
     createMessageBoxSuccessText(text: string) {
-      return `<span class="tw-text-green-600">${text}</span>`;
+      return `<span class="tw:text-green-600">${text}</span>`;
     },
     createMessageBoxFailureText(text: string) {
-      return `<span class="tw-text-red-600">${text}</span>`;
+      return `<span class="tw:text-red-600">${text}</span>`;
     },
     createMessageBoxVictoryText(text: string) {
-      return `<span class="tw-text-green-600 tw-font-bold">${text}</span>`;
+      return `<span class="tw:text-green-600 tw:font-bold">${text}</span>`;
     },
     createMessageBoxDefeatText(text: string) {
-      return `<span class="tw-text-red-600 tw-font-bold">${text}</span>`;
+      return `<span class="tw:text-red-600 tw:font-bold">${text}</span>`;
     },
     testPlayerRollAgainstLuck(onLucky: () => void, onUnlucky: () => void) {
       if (this.playerRoll <= this.luck) {
@@ -625,8 +646,23 @@ export default defineComponent({
         }
       }
     },
-    async doCombat(): Promise<void> {
+    isAllMonstersDefeated(): boolean {
+      const isAdditionalEncountersDefeated = this.additionalEncounters.every(
+        (encounter): boolean => {
+          return encounter.stamina <= 0;
+        }
+      );
+
+      return isAdditionalEncountersDefeated && this.monsterStamina <= 0;
+    },
+    runCombat(): void {
       this.playerTotalRoll = this.skill + this.playerRoll;
+
+      if (this.isBonusesApplied) {
+        console.log('skillBonus:', this.skillBonus);
+        this.playerTotalRoll += this.skillBonus;
+      }
+
       this.monsterTotalRoll = this.monsterSkill + this.monsterRoll;
       this.isCombatLuckDisabled = false;
       this.generateCombatStrengthMessages();
@@ -634,6 +670,18 @@ export default defineComponent({
       this.generateAdditionalEncounters();
       this.generateCombatVictoryDefeatMessages();
       this.scrollToBottomOfMessageBox();
+
+      if (this.monsterStamina <= 0 && this.additionalEncounters.length > 0) {
+        this.monsterName = this.additionalEncounters[0].name;
+        this.monsterSkill = this.additionalEncounters[0].skill;
+        this.monsterStamina = this.additionalEncounters[0].stamina;
+        this.additionalEncounters.shift();
+      }
+
+      if (this.isAllMonstersDefeated()) {
+        console.log('resetBonuses');
+        this.resetBonuses();
+      }
     },
     async testCombatLuck(): Promise<void> {
       this.diceMode = this.diceModeCombatLuck;
@@ -701,25 +749,32 @@ export default defineComponent({
     onClickRemoveMonster(index: number): void {
       this.additionalEncounters.splice(index, 1);
     },
+    randomizeMagic(): void {
+      const max = 12;
+      const magicModifier = 6;
+      this.magic = this.getRandomNumber(max) + magicModifier;
+    },
   },
 });
 </script>
 
 <style>
+@reference '../assets/css/tailwind.css';
+
 .fight-button {
-  @apply tw-px-6 tw-py-2 tw-text-2xl tw-font-bold;
+  @apply tw:px-6 tw:py-2 tw:text-2xl tw:font-bold;
 }
 
 .sheet {
   background-image: url('../assets/images/old-paper-texture.jpg');
 
-  @apply tw-border tw-border-solid tw-border-gray-800 tw-p-3;
+  @apply tw:border tw:border-solid tw:border-gray-800 tw:p-3;
 }
 
 .message-box {
   background-color: rgba(255, 255, 255, 0.4);
   border: 4px inset rgba(255, 255, 255, 0.4);
-  @apply tw-w-full tw-h-28 tw-mx-auto tw-text-center tw-overflow-y-auto;
+  @apply tw:w-full tw:h-28 tw:mx-auto tw:text-center tw:overflow-y-auto;
 }
 
 @media (min-width: 768px) {
@@ -729,6 +784,7 @@ export default defineComponent({
 }
 
 .monster-wrapper {
-  @apply tw-w-full md:tw-w-1/2 md:[&:nth-child(even)]:tw-pr-1.5 md:[&:nth-child(odd)]:tw-pl-1.5;
+  @apply tw:w-full tw:md:w-1/2;
+  /* md:[&:nth-child(even)]:tw:pr-1.5 md:[&:nth-child(odd)]:tw:pl-1.5; */
 }
 </style>

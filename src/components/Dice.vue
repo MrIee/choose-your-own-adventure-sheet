@@ -48,18 +48,20 @@ export default defineComponent({
 </script>
 
 <style>
+@reference '../assets/css/tailwind.css';
+
 .dice {
   box-shadow: inset 0 0 4px 0 rgb(0 0 0 / 0.4);
 
-  @apply tw-h-16
-  tw-w-16
-  tw-m-1
-  tw-relative
-  tw-rounded-lg
-  tw-border-2
-  tw-border-solid
-  tw-border-gray-800
-  tw-bg-white;
+  @apply tw:h-16
+  tw:w-16
+  tw:m-1
+  tw:relative
+  tw:rounded-lg
+  tw:border-2
+  tw:border-solid
+  tw:border-gray-800
+  tw:bg-white;
 }
 
 .dot-tl,
@@ -69,16 +71,16 @@ export default defineComponent({
 .dot-tr,
 .dot-mr,
 .dot-br {
-  @apply tw-h-3
-  tw-w-3
-  tw-absolute
-  tw-top-1/2
-  -tw-translate-y-1/2
-  tw-left-0
-  tw-right-0
-  tw-mx-auto
-  tw-bg-gray-800
-  tw-rounded-full;
+  @apply tw:h-3
+  tw:w-3
+  tw:absolute
+  tw:top-1/2
+  tw:-translate-y-1/2
+  tw:left-0
+  tw:right-0
+  tw:mx-auto
+  tw:bg-gray-800
+  tw:rounded-full;
 }
 
 .dot-tl,
@@ -87,35 +89,35 @@ export default defineComponent({
 .dot-tr,
 .dot-mr,
 .dot-br {
-  @apply tw-mx-0;
+  @apply tw:mx-0;
 }
 
 .dot-tl,
 .dot-tr,
 .dot-bl,
 .dot-br {
-  @apply tw-translate-y-0;
+  @apply tw:translate-y-0;
 }
 
 .dot-tl,
 .dot-ml,
 .dot-bl {
-  @apply tw-left-2 tw-right-auto;
+  @apply tw:left-2 tw:right-auto;
 }
 
 .dot-tl,
 .dot-tr {
-  @apply tw-top-2 tw-bottom-auto;
+  @apply tw:top-2 tw:bottom-auto;
 }
 
 .dot-tr,
 .dot-mr,
 .dot-br {
-  @apply tw-left-auto tw-right-2;
+  @apply tw:left-auto tw:right-2;
 }
 
 .dot-bl,
 .dot-br {
-  @apply tw-top-auto tw-bottom-2;
+  @apply tw:top-auto tw:bottom-2;
 }
 </style>

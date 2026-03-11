@@ -1,7 +1,7 @@
 <template>
   <img
     v-if="imgUrl"
-    class="tw-hidden sm:tw-block tw-w-72 tw-mx-auto tw-mt-3 tw-mb-6"
+    class="tw:hidden tw:sm:block tw:w-72 tw:mx-auto tw:mt-3 tw:mb-6"
     :src="imgUrl"
     alt="Sheet divider graphic"
   />

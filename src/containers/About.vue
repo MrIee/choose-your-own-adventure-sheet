@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper container box">
-    <h1 class="tw-text-center">About</h1>
+    <h1 class="tw:text-center">About</h1>
     <p>
       This project aims to replicate the adventure sheet from the Fighting
       Fantasy series of books in a digital form. Fighting Fantasy is a series of

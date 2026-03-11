@@ -1,13 +1,13 @@
 <template>
   <div class="wrapper container box">
-    <h1 class="tw-text-center">Rules</h1>
+    <h1 class="tw:text-center">Rules</h1>
     <p>
       The rules for each book in the Fighting Fantasy series vary depending on
       each adventure. Detailed below are the rules for the standard adventure.
     </p>
 
-    <h3 class="tw-mb-1">Contents</h3>
-    <ul class="tw-mb-8">
+    <h3 class="tw:mb-1">Contents</h3>
+    <ul class="tw:mb-8">
       <li><a href="#stats">Skill, Stamina and Luck</a></li>
       <li>
         <a href="#battles">Battles</a>
@@ -56,7 +56,7 @@
       higher the score, the better.
     </p>
 
-    <h3 class="tw-mt-3"><a id="battles">Battles</a></h3>
+    <h3 class="tw:mt-3"><a id="battles">Battles</a></h3>
     <p>
       During your adventure you will often encounter hostile cieatures which
       will attack you, and you yourself may choose to draw your sword against an
@@ -102,7 +102,7 @@
         all over again by creating a new character.
       </li>
     </ol>
-    <h4 class="tw-mb-2">
+    <h4 class="tw:mb-2">
       <a id="fighting-more-than-one-opponent">
         Fighting more than one Opponent
       </a>
@@ -127,7 +127,7 @@
       lower, you will have been wounded in the normal way.
     </p>
 
-    <h3 class="tw-mt-3"><a id="luck">Luck</a></h3>
+    <h3 class="tw:mt-3"><a id="luck">Luck</a></h3>
     <p>
       At various times during your advenfure, either in battles or when you come
       across other situations in which you could either be Lucky or Unlucky
@@ -144,7 +144,7 @@
       your current LUCK score. Thus you will soon realize that the more you rely
       on your LUCK, the more risky this will become.
     </p>
-    <h4 class="tw-mb-2">
+    <h4 class="tw:mb-2">
       <a id="luck-in-battles">Using Luck in Battles</a>
     </h4>
     <p>

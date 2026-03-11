@@ -1,20 +1,20 @@
 <template>
   <div class="box">
     <h3>{{ label }}</h3>
-    <div class="tw-mb-4">
-      <span class="tw-mr-2">Add item</span>
-      <input type="text" class="tw-mb-2" name="addItem" v-model="newItem" />
-      <span class="inventory__add-icon" @click="addItem(newItem)" />
+    <div class="tw:flex tw:mb-4">
+      <span class="tw:mr-2">Add item</span>
+      <input class="tw:mr-2" type="text" name="addItem" v-model="newItem" />
+      <button @click="addItem(newItem)"><PlusIcon /></button>
     </div>
-    <Draggable
+    <!-- <Draggable
       :ref="inventoryRef"
-      class="tw-h-96 tw-overflow-auto"
+      class="tw:h-96 tw:overflow-auto"
       :list="itemsList"
       item-key="item"
       handle=".inventory__sort-icon"
     >
       <template #item="{ element, index }">
-        <div class="tw-flex tw-items-center tw-mb-2">
+        <div class="tw:flex tw:items-center tw:mb-2">
           <span class="inventory__sort-icon"></span>
           <input class="inventory__item" type="text" v-model="element.name" />
           <NumberInput
@@ -25,13 +25,30 @@
           <span class="inventory__remove-icon" @click="removeItem(index)" />
         </div>
       </template>
+    </Draggable> -->
+
+    <Draggable :ref="inventoryRef" class="tw:h-96 tw:overflow-auto" :list="itemsList" handle=".inventory__sort-icon">
+      <div v-for="(item, index) in itemsList" :key="item.id">
+        <div class="tw:flex tw:items-center tw:mb-2">
+          <span class="inventory__sort-icon"></span>
+          <input class="inventory__item" type="text" v-model="item.name" />
+          <NumberInput
+            class="inventory__quantity"
+            v-model="item.quantity"
+            :min="1"
+          />
+          <span class="inventory__remove-icon" @click="removeItem(index)" />
+        </div>
+      </div>
     </Draggable>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import Draggable from 'vuedraggable';
+import { nanoid } from 'nanoid';
+import PlusIcon from '../components/icons/Plus.vue';
+import { VueDraggableNext } from 'vue-draggable-next';
 import NumberInput from './inputs/NumberInput.vue';
 
 const emptyItemNames: Array<string> = [
@@ -42,9 +59,16 @@ const emptyItemNames: Array<string> = [
   '',
 ];
 
+interface InventoryItem {
+  id: string;
+  name: string;
+  quantity: number;
+};
+
 export default defineComponent({
   components: {
-    Draggable,
+    PlusIcon,
+    Draggable: VueDraggableNext,
     NumberInput,
   },
   props: {
@@ -53,8 +77,8 @@ export default defineComponent({
       default: 'Inventory',
     },
     items: {
-      type: Array,
-      default: (): Array<object> => [],
+      type: Array<InventoryItem>,
+      default: (): Array<InventoryItem> => [],
     },
   },
   data() {
@@ -69,28 +93,25 @@ export default defineComponent({
       this.itemsList.splice(index, 1);
     },
     addItem(value: string): void {
-      const inventory: typeof this = this.$refs[
-        this.inventoryRef
-      ] as typeof this;
+      const inventoryEl: HTMLElement = (this.$refs[this.inventoryRef] as typeof this).$el;
       let newItemName: string = value;
 
       if (value === '') {
-        newItemName =
-          emptyItemNames[Math.floor(Math.random() * emptyItemNames.length)];
+        newItemName = emptyItemNames[Math.floor(Math.random() * emptyItemNames.length)] || '';
       }
 
-      this.itemsList.push({ name: newItemName, quantity: 1 });
-      this.$nextTick(() => {
-        inventory.$el.scrollTop = inventory.$el.scrollHeight;
-      });
+      this.itemsList.push({ id: nanoid(), name: newItemName, quantity: 1 });
+      this.$nextTick(() => { inventoryEl.scrollTop = inventoryEl.scrollHeight; });
     },
   },
 });
 </script>
 
 <style>
+@reference '../assets/css/tailwind.css';
+
 .inventory__sort-icon {
-  @apply tw-inline-block  tw-h-2.5 tw-w-4 tw-mr-2 tw-cursor-n-resize tw-relative;
+  @apply tw:inline-block  tw:h-2.5 tw:w-4 tw:mr-2 tw:cursor-n-resize tw:relative;
 }
 
 .inventory__sort-icon::before,
@@ -98,7 +119,7 @@ export default defineComponent({
   height: 0.1875rem;
   content: '';
 
-  @apply tw-w-full tw-absolute tw-bg-black tw-opacity-20;
+  @apply tw:w-full tw:absolute tw:bg-black tw:opacity-20;
 }
 
 .inventory__sort-icon::before {
@@ -110,51 +131,51 @@ export default defineComponent({
 }
 
 .inventory__item {
-  @apply tw-w-full tw-px-1 tw-mr-1;
+  @apply tw:w-full tw:px-1 tw:mr-1;
 }
 
 input[type='number'].inventory__quantity {
-  @apply tw-w-12;
+  @apply tw:w-12;
 }
 
 .inventory__add-icon {
-  @apply tw-inline-block
-  tw-h-4
-  tw-w-4
-  tw-ml-2
-  tw-cursor-pointer
-  tw-relative
-  tw-text-3xl
-  tw-select-none;
+  @apply tw:inline-block
+  tw:h-4
+  tw:w-4
+  tw:ml-2
+  tw:cursor-pointer
+  tw:relative
+  tw:text-3xl
+  tw:select-none;
 }
 
 .inventory__add-icon:before,
 .inventory__add-icon:after {
   content: '';
 
-  @apply tw-h-0.5 tw-w-full tw-absolute tw-bg-black tw-top-1/2 -tw-translate-y-1/2;
+  @apply tw:h-0.5 tw:w-full tw:absolute tw:bg-black tw:top-1/2 tw:-translate-y-1/2;
 }
 
 .inventory__add-icon:after {
-  @apply -tw-rotate-90;
+  @apply tw:-rotate-90;
 }
 
 .inventory__remove-icon {
-  @apply tw-inline-block tw-h-5 tw-w-5 tw-ml-2 tw-cursor-pointer tw-relative;
+  @apply tw:inline-block tw:h-5 tw:w-5 tw:ml-2 tw:cursor-pointer tw:relative;
 }
 
 .inventory__remove-icon:before,
 .inventory__remove-icon:after {
   content: '';
 
-  @apply tw-h-0.5 tw-w-full tw-absolute tw-bg-black tw-top-1/2 -tw-translate-y-1/2;
+  @apply tw:h-0.5 tw:w-full tw:absolute tw:bg-black tw:top-1/2 tw:-translate-y-1/2;
 }
 
 .inventory__remove-icon:before {
-  @apply tw-rotate-45;
+  @apply tw:rotate-45;
 }
 
 .inventory__remove-icon:after {
-  @apply -tw-rotate-45;
+  @apply tw:-rotate-45;
 }
 </style>

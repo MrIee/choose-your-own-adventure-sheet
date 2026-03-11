@@ -1,16 +1,16 @@
 <template>
-  <div class="tw-w-full md:tw-w-1/2 box">
-    <h3 class="tw-mb-3">Player</h3>
-    <div class="tw-flex tw-mb-3">
-      <label class="tw-mr-2" for="playerName">Name:</label>
+  <div class="tw:w-full tw:md:w-1/2 box">
+    <h3 class="tw:mb-3">Player</h3>
+    <div class="tw:flex tw:mb-3">
+      <label class="tw:mr-2" for="playerName">Name:</label>
       <input
-        class="tw-w-full sm:tw-w-auto"
+        class="tw:w-full tw:sm:w-auto"
         type="text"
         :value="playerName"
         @input="onUpdatePlayerName"
       />
     </div>
-    <div class="tw-flex">
+    <div class="tw:flex">
       <div>
         <div class="stats__cell" />
         <div class="stats__row stats__label stats__cell">Skill</div>
@@ -42,30 +42,30 @@
           />
         </div>
         <div class="stats__row stats__cell">
-          <StatAnimation
-            v-if="showAnimationForStamina"
-            :is-damage="isDamageAnimation"
-            :stat-value="statChange"
-          />
           <NumberInput
             :value="currentStamina"
             :max="initialStamina"
             @update="onUpdateStamina"
           />
+          <StatAnimation
+            v-if="showAnimationForStamina"
+            :is-damage="isDamageAnimation"
+            :stat-value="statChange"
+          />
         </div>
         <div class="stats__row stats__cell">
-          <StatAnimation v-if="showAnimationForLuck" :stat-value="statChange" />
           <NumberInput
             :value="currentLuck"
             :max="initialLuck"
             @update="onUpdateLuck"
           />
+          <StatAnimation v-if="showAnimationForLuck" :stat-value="statChange" />
         </div>
       </div>
     </div>
     <div>
       <button
-        class="tw-mt-3"
+        class="tw:mt-3"
         @click="onClickRandomizeStats"
         :disabled="isRollStatsDisabled"
       >
@@ -162,19 +162,19 @@ export default defineComponent({
       );
     },
     onUpdateInitialSkill(value: number): void {
-      this.$emit('update:initialSkill', value);
+      this.$emit('update:initial-skill', value);
     },
     onUpdateSkill(value: number): void {
       this.$emit('update:current-skill', value);
     },
     onUpdateInitialStamina(value: number): void {
-      this.$emit('update:initialStamina', value);
+      this.$emit('update:initial-stamina', value);
     },
     onUpdateStamina(value: number): void {
       this.$emit('update:current-stamina', value);
     },
     onUpdateInitialLuck(value: number): void {
-      this.$emit('update:initialLuck', value);
+      this.$emit('update:initial-luck', value);
     },
     onUpdateLuck(value: number): void {
       this.$emit('update:current-luck', value);
@@ -187,41 +187,25 @@ export default defineComponent({
 </script>
 
 <style>
+@reference '../assets/css/tailwind.css';
+
 .stats__label {
-  @apply tw-mr-3;
+  @apply tw:mr-3;
 }
 
 .stats__cell {
-  @apply tw-h-8;
+  @apply tw:h-8;
 }
 
 .stats__row {
-  @apply tw-mb-2 last:tw-mb-0;
+  @apply tw:mb-2 tw:last:mb-0;
 }
 
 .stats__column {
-  @apply tw-flex tw-flex-col tw-mr-3;
-}
-
-.stats__damage {
-  @apply tw-text-red-500;
-}
-
-.stats__gain {
-  @apply tw-text-green-500;
-}
-
-.stats__animated {
-  top: 6%;
-
-  @apply tw-font-bold
-  tw-transition-all
-  tw-duration-1000
-  tw-absolute
-  -tw-right-8;
+  @apply tw:flex tw:flex-col tw:mr-3;
 }
 
 .stats__moved {
-  @apply tw-right-2 tw-opacity-0;
+  @apply tw:right-2 tw:opacity-0;
 }
 </style>

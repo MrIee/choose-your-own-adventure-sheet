@@ -1,6 +1,6 @@
 <template>
   <nav v-click-outside="() => (isExpanded = false)" class="topbar">
-    <div class="wrapper tw-flex tw-items-center tw-flex-wrap">
+    <div class="wrapper tw:flex tw:items-center tw:flex-wrap tw:px-3">
       <a
         for="topbar-menu"
         class="topbar__nav-icon-wrapper"
@@ -8,7 +8,7 @@
       >
         <span class="topbar__nav-icon"></span>
       </a>
-      <h2 class="tw-text-base sm:tw-text-xl tw-mr-6">
+      <h2 class="tw:text-base tw:sm:text-xl tw:mr-6">
         <router-link to="/" @click="isExpanded = false">
           {{ title }}
         </router-link>
@@ -48,23 +48,25 @@ export default defineComponent({
 </script>
 
 <style>
+@reference '../assets/css/tailwind.css';
+
 .topbar {
-  @apply tw-py-3.5 tw-top-0;
+  @apply tw:py-3.5 tw:top-0;
 }
 
 .topbar__nav {
-  @apply tw-w-full
-  md:tw-w-auto
-  tw-h-0
-  md:tw-h-auto
-  tw-bg-gray-800
-  tw-top-full
-  md:tw-top-auto
-  tw-left-0
-  md:tw-left-auto
-  tw-overflow-hidden
-  tw-transition-all
-  tw-duration-300;
+  @apply tw:w-full
+  tw:md:w-auto
+  tw:h-0
+  tw:md:h-auto
+  tw:bg-gray-800
+  tw:top-full
+  tw:md:top-auto
+  tw:left-0
+  tw:md:left-auto
+  tw:overflow-hidden
+  tw:transition-all
+  tw:duration-300;
 }
 
 @media (max-width: 768px) {
@@ -75,46 +77,46 @@ export default defineComponent({
 }
 
 .topbar__nav-menu li {
-  @apply tw-block md:tw-inline-block tw-mr-3 last:tw-mr-0 tw-py-2 md:tw-py-0;
+  @apply tw:block tw:md:inline-block tw:mr-3 tw:last:mr-0 tw:py-2 tw:md:py-0;
 }
 
 .topbar__nav-menu li > a {
-  @apply tw-no-underline;
+  @apply tw:no-underline;
 }
 
 .topbar__nav-icon-wrapper {
-  @apply tw-inline-flex md:tw-hidden tw-h-5 tw-items-center tw-mr-3 tw-cursor-pointer;
+  @apply tw:inline-flex tw:md:hidden tw:h-5 tw:items-center tw:mr-3 tw:cursor-pointer;
 }
 
 .topbar__nav-icon,
 .topbar__nav-icon-wrapper,
 .topbar__nav-icon::before,
 .topbar__nav-icon::after {
-  @apply tw-w-5;
+  @apply tw:w-5;
 }
 
 .topbar__nav-icon {
-  @apply tw-relative;
+  @apply tw:relative;
 }
 
 .topbar__nav-icon,
 .topbar__nav-icon::before,
 .topbar__nav-icon::after {
-  @apply tw-h-0.5 tw-bg-white tw-rounded-full;
+  @apply tw:h-0.5 tw:bg-white tw:rounded-full;
 }
 
 .topbar__nav-icon::before,
 .topbar__nav-icon::after {
   content: '';
 
-  @apply tw-absolute;
+  @apply tw:absolute;
 }
 
 .topbar__nav-icon::before {
-  @apply tw-bottom-1.5;
+  @apply tw:bottom-1.5;
 }
 
 .topbar__nav-icon::after {
-  @apply tw-top-1.5;
+  @apply tw:top-1.5;
 }
 </style>

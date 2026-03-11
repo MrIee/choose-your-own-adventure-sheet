@@ -1,9 +1,12 @@
 import { createApp } from 'vue';
+import { createPinia } from 'pinia';
 import App from './App.vue';
 import './assets/css/tailwind.css';
 import router from './router';
 
+const pinia = createPinia();
 const app = createApp(App);
+
 app.directive('click-outside', {
   mounted(el, binding) {
     el.clickOutsideEvent = (event: Event): void => {
@@ -18,4 +21,6 @@ app.directive('click-outside', {
   },
 });
 
-app.use(router).mount('#app');
+app.use(router);
+app.use(pinia);
+app.mount('#app');

@@ -2,7 +2,7 @@
   <div class="box">
     <h3>{{ label }}</h3>
     <textarea
-      class="tw-py-1 tw-px-2"
+      class="tw:py-1 tw:px-2"
       rows="8"
       :value="modelValue"
       @input="onInput"

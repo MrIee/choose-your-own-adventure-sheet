@@ -1,6 +1,6 @@
 <template>
   <button
-    class="tw-px-7 tw-py-3 tw-text-xl tw-font-bold"
+    class="tw:h-auto tw:px-7 tw:py-3 tw:text-xl tw:font-bold"
     :disabled="isDisabled"
   >
     {{ label }}
@@ -9,6 +9,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+
 export default defineComponent({
   props: {
     isDisabled: {
